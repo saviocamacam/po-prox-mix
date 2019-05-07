@@ -192,6 +192,59 @@
                                 </div>
                             </div>
                         </form>
+
+                        <form
+                            *ngIf="i == 2"
+                            class="m-24"
+                            [formGroup]="constraintForm"
+                        >
+                            <div
+                                fxLayout="column"
+                                fxLayoutAlign="start start"
+                                fxLayoutGap="gappx"
+                                *ngFor="
+                                    let item of [].constructor(
+                                        productForm.get('product_quantity')
+                                            .value
+                                    );
+                                    let i = index
+                                "
+                            >
+                                <div
+                                    class="example-full-width"
+                                    *ngFor="
+                                        let item of [].constructor(
+                                            materiaForm.get('materia_quantity')
+                                                .value
+                                        );
+                                        let j = index
+                                    "
+                                >
+                                    <mat-form-field
+                                        class="example-half-width p-12"
+                                    >
+                                        <input
+                                            matInput
+                                            type="number"
+                                            placeholder="quantidade de {{
+                                                materiaForm.get(
+                                                    'materia_' + (j + 1) + '_n'
+                                                ).value
+                                            }} para {{
+                                                productForm.get(
+                                                    'product_' + (i + 1) + '_n'
+                                                ).value
+                                            }} 
+                                            "
+                                            formControlName="value_{{
+                                                i + 1
+                                            }}_{{ j + 1 }}"
+                                        />
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <span>{{ result | json}}</span>
+                        </form>
                     </div>
                 </div>
             </ng-container>
@@ -222,7 +275,7 @@
             <button
                 mat-fab
                 class="done green-600"
-                routerLink="/apps/academy/courses"
+                (click)="executeSolver()"
                 [disabled]="currentStep !== course.totalSteps - 1"
                 [fxShow]="currentStep === course.totalSteps - 1"
             >

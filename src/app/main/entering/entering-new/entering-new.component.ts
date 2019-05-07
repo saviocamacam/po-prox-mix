@@ -20,6 +20,7 @@ import {
     Validators,
     FormControl
 } from "@angular/forms";
+import * as solver from "javascript-lp-solver/src/solver";
 
 @Component({
     selector: "app-entering-new",
@@ -39,10 +40,15 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChildren(FusePerfectScrollbarDirective)
     fuseScrollbarDirectives: QueryList<FusePerfectScrollbarDirective>;
 
+    models: any = {};
+
     // Private
     private _unsubscribeAll: Subject<any>;
     productForm: FormGroup;
     materiaForm: FormGroup;
+    constraintForm: FormGroup;
+    product_quantity: any;
+    result: any;
 
     /**
      * Constructor
@@ -57,6 +63,11 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
         private _fuseSidebarService: FuseSidebarService,
         private _formBuilder: FormBuilder
     ) {
+        this.models.optimize = "profit";
+        this.models.opType = "max";
+        this.models.constraints = {};
+        this.models.variables = {};
+
         // Set the defaults
         this.animationDirection = "none";
         this.currentStep = 0;
@@ -93,17 +104,19 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                 Validators.compose([Validators.max(10), Validators.required])
             ]
         });
+
+        this.constraintForm = this._formBuilder.group({});
         this.productForm.controls["product_quantity"].valueChanges.subscribe(
             selectedValue => {
                 console.log(selectedValue);
                 for (let index = 0; index < selectedValue; index++) {
                     this.productForm.addControl(
                         "product_" + (index + 1),
-                        new FormControl(null)
+                        new FormControl(null, Validators.required)
                     );
                     this.productForm.addControl(
                         "product_" + (index + 1) + "_n",
-                        new FormControl(null)
+                        new FormControl(null, Validators.required)
                     );
                 }
             }
@@ -113,11 +126,11 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                 for (let index = 0; index < selectedValue; index++) {
                     this.materiaForm.addControl(
                         "materia_" + (index + 1),
-                        new FormControl(null)
+                        new FormControl(null, Validators.required)
                     );
                     this.materiaForm.addControl(
                         "materia_" + (index + 1) + "_n",
-                        new FormControl(null)
+                        new FormControl(null, Validators.required)
                     );
                 }
             }
@@ -175,12 +188,86 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
         this.currentStep = step;
     }
 
+    executeSolver(): void {
+        console.log(this.constraintForm.value);
+        for (
+            let indexi = 0;
+            indexi < this.productForm.get("product_quantity").value;
+            indexi++
+        ) {
+            for (
+                let indexj = 0;
+                indexj < this.materiaForm.get("materia_quantity").value;
+                indexj++
+            ) {
+                this.models.variables[
+                    this.productForm.get("product_" + (indexi + 1) + "_n").value
+                ][
+                    this.materiaForm.get("materia_" + (indexj + 1) + "_n").value
+                ] = this.constraintForm.get(
+                    "value_" + (indexi + 1) + "_" + (indexj + 1)
+                ).value;
+                console.log(this.models);
+                this.result = solver.Solve(this.models);
+                console.log(this.result);
+            }
+        }
+    }
+
     /**
      * Go to next step
      */
     gotoNextStep(): void {
         console.log(this.materiaForm.value);
         console.log(this.productForm.value);
+        this.product_quantity = this.productForm.get("product_quantity").value;
+        if (this.materiaForm.valid) {
+            for (
+                let index = 0;
+                index < this.materiaForm.get("materia_quantity").value;
+                index++
+            ) {
+                this.models["constraints"][
+                    this.materiaForm.get(`materia_${index + 1}_n`).value
+                ] = { max: this.materiaForm.get(`materia_${index + 1}`).value };
+            }
+            console.log(this.models);
+        }
+        if (this.productForm.valid) {
+            for (
+                let index = 0;
+                index < this.productForm.get("product_quantity").value;
+                index++
+            ) {
+                this.models["variables"][
+                    this.productForm.get(`product_${index + 1}_n`).value
+                ] = {
+                    profit: this.productForm.get(`product_${index + 1}`).value
+                };
+            }
+            console.log(this.models);
+        }
+        if (
+            this.materiaForm.get("materia_quantity").value > 0 &&
+            this.productForm.get("product_quantity").value > 0
+        ) {
+            for (
+                let indexi = 0;
+                indexi < this.productForm.get("product_quantity").value;
+                indexi++
+            ) {
+                for (
+                    let indexj = 0;
+                    indexj < this.materiaForm.get("materia_quantity").value;
+                    indexj++
+                ) {
+                    this.constraintForm.addControl(
+                        "value_" + (indexi + 1) + "_" + (indexj + 1),
+                        new FormControl(null)
+                    );
+                }
+            }
+        }
         if (this.currentStep === this.course.totalSteps - 1) {
             return;
         }
