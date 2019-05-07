@@ -3,7 +3,7 @@ export class POFakeDb {
         {
             title: "Informar quantidade de matérias-primas",
             content:
-                "<h1>Quantas matérias primas você utiliza e quanto tem disponível no período?</h1>"
+                "<h1>Quantas matérias-primas você utiliza e quanto tem disponível no período?</h1>"
         },
         {
             title: "Informar quantidade de produtos",
