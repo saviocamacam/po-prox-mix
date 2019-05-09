@@ -118,6 +118,14 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                         "product_" + (index + 1) + "_n",
                         new FormControl(null, Validators.required)
                     );
+                    this.productForm.addControl(
+                        "product_" + (index + 1) + "_min",
+                        new FormControl(null)
+                    );
+                    this.productForm.addControl(
+                        "product_" + (index + 1) + "_max",
+                        new FormControl(null)
+                    );
                 }
             }
         );
@@ -244,6 +252,22 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                 ] = {
                     profit: this.productForm.get(`product_${index + 1}`).value
                 };
+                if (this.productForm.get(`product_${index + 1}_min`).value) {
+                    this.models["constraints"][
+                        this.productForm.get(`product_${index + 1}_n`).value
+                    ] = {
+                        min: this.productForm.get(`product_${index + 1}_min`)
+                            .value
+                    };
+                }
+                if (this.productForm.get(`product_${index + 1}_max`).value) {
+                    this.models["constraints"][
+                        this.productForm.get(`product_${index + 1}_n`).value
+                    ] = {
+                        max: this.productForm.get(`product_${index + 1}_max`)
+                            .value
+                    };
+                }
             }
             console.log(this.models);
         }

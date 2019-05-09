@@ -189,6 +189,35 @@
                                             }}"
                                         />
                                     </mat-form-field>
+                                    <mat-form-field
+                                        class="example-half-width p-12"
+                                    >
+                                        <input
+                                            matInput
+                                            type="text"
+                                            placeholder="Mínimo a ser produzido {{
+                                                i + 1
+                                            }}"
+                                            formControlName="product_{{
+                                                i + 1
+                                            }}_min"
+                                        />
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        class="example-half-width p-12"
+                                    >
+                                        <input
+                                            matInput
+                                            type="number"
+                                            formControlName="product_{{
+                                                i + 1
+                                            }}_max"
+                                            placeholder="Máximo a ser produzido {{
+                                                i + 1
+                                            }}"
+                                        />
+                                    </mat-form-field>
                                 </div>
                             </div>
                         </form>
