@@ -254,19 +254,35 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                 };
                 if (this.productForm.get(`product_${index + 1}_min`).value) {
                     this.models["constraints"][
-                        this.productForm.get(`product_${index + 1}_n`).value
+                        this.productForm.get(`product_${index + 1}_n`).value +
+                            "_min"
                     ] = {
-                        min: this.productForm.get(`product_${index + 1}_min`)
-                            .value
+                        min: this.productForm.get(`product_${index + 1}_min`).value
                     };
                 }
                 if (this.productForm.get(`product_${index + 1}_max`).value) {
                     this.models["constraints"][
-                        this.productForm.get(`product_${index + 1}_n`).value
+                        this.productForm.get(`product_${index + 1}_n`).value +
+                            "_max"
                     ] = {
-                        max: this.productForm.get(`product_${index + 1}_max`)
-                            .value
+                        max: this.productForm.get(`product_${index + 1}_max`).value
                     };
+                }
+                if (this.productForm.get(`product_${index + 1}_min`).value) {
+                    this.models["variables"][
+                        this.productForm.get(`product_${index + 1}_n`).value
+                    ][
+                        this.productForm.get(`product_${index + 1}_n`).value +
+                            "_min"
+                    ] = this.productForm.get(`product_${index + 1}_min`).value;
+                }
+                if (this.productForm.get(`product_${index + 1}_max`).value) {
+                    this.models["variables"][
+                        this.productForm.get(`product_${index + 1}_n`).value
+                    ][
+                        this.productForm.get(`product_${index + 1}_n`).value +
+                            "_max"
+                    ] = this.productForm.get(`product_${index + 1}_max`).value;
                 }
             }
             console.log(this.models);
