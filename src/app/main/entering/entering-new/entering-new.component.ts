@@ -274,7 +274,7 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                     ][
                         this.productForm.get(`product_${index + 1}_n`).value +
                             "_min"
-                    ] = this.productForm.get(`product_${index + 1}_min`).value;
+                    ] = 1;
                 }
                 if (this.productForm.get(`product_${index + 1}_max`).value) {
                     this.models["variables"][
@@ -282,7 +282,7 @@ export class EnteringNewComponent implements OnInit, OnDestroy, AfterViewInit {
                     ][
                         this.productForm.get(`product_${index + 1}_n`).value +
                             "_max"
-                    ] = this.productForm.get(`product_${index + 1}_max`).value;
+                    ] = 1;
                 }
             }
             console.log(this.models);
