@@ -1,17 +1,13 @@
 import { Injectable } from "@angular/core";
-import {
-    Resolve,
-    ActivatedRouteSnapshot,
-    RouterStateSnapshot
-} from "@angular/router";
 import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 
 @Injectable({
     providedIn: "root"
 })
-export class EnteringService implements Resolve<any> {
-    onEnteringChanged: BehaviorSubject<any>;
+export class DesignationService {
+    onStepsChanged: BehaviorSubject<any>;
 
     /**
      * Constructor
@@ -20,7 +16,7 @@ export class EnteringService implements Resolve<any> {
      */
     constructor(private _httpClient: HttpClient) {
         // Set the defaults
-        this.onEnteringChanged = new BehaviorSubject({});
+        this.onStepsChanged = new BehaviorSubject({});
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -55,13 +51,13 @@ export class EnteringService implements Resolve<any> {
      * @returns {Promise<any>}
      */
     getCourse(courseId, courseSlug): Promise<any> {
-        courseId = "15459251a6d6b397565";
-        courseSlug = "entering-data";
+        courseId = "15459251a6d6b397567";
+        courseSlug = "designation-data";
         return new Promise((resolve, reject) => {
             this._httpClient
-                .get("api/entering-steps/" + courseId + "/" + courseSlug)
+                .get("api/designation-steps/" + courseId + "/" + courseSlug)
                 .subscribe((response: any) => {
-                    this.onEnteringChanged.next(response);
+                    this.onStepsChanged.next(response);
                     resolve(response);
                 }, reject);
         });

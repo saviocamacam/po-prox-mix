@@ -5,7 +5,9 @@ import { POFakeDb } from "app/fake-db/po";
 export class FakeDbService implements InMemoryDbService {
     createDb(): any {
         return {
-            steps: POFakeDb.entering
+            "entering-steps": POFakeDb.entering,
+            "transport-steps": POFakeDb.entering,
+            "designation-steps": POFakeDb.entering
         };
     }
 }

@@ -1,24 +1,30 @@
-import { AfterViewInit, Directive, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { Platform } from '@angular/cdk/platform';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import PerfectScrollbar from 'perfect-scrollbar';
-import * as _ from 'lodash';
+import {
+    AfterViewInit,
+    Directive,
+    ElementRef,
+    HostListener,
+    Input,
+    OnDestroy
+} from "@angular/core";
+import { NavigationEnd, Router } from "@angular/router";
+import { Platform } from "@angular/cdk/platform";
+import { Subject } from "rxjs";
+import { filter, takeUntil } from "rxjs/operators";
+import PerfectScrollbar from "perfect-scrollbar";
+import * as _ from "lodash";
 
-import { FuseConfigService } from '@fuse/services/config.service';
+import { FuseConfigService } from "@fuse/services/config.service";
 
 @Directive({
-    selector: '[fusePerfectScrollbar]'
+    selector: "[fusePerfectScrollbar]"
 })
-export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
-{
+export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy {
     isInitialized: boolean;
     isMobile: boolean;
     ps: PerfectScrollbar | any;
 
     // Private
-    private _enabled: boolean | '';
+    private _enabled: boolean | "";
     private _debouncedUpdate: any;
     private _options: any;
     private _unsubscribeAll: Subject<any>;
@@ -36,8 +42,7 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
         private _fuseConfigService: FuseConfigService,
         private _platform: Platform,
         private _router: Router
-    )
-    {
+    ) {
         // Set the defaults
         this.isInitialized = false;
         this.isMobile = false;
@@ -61,14 +66,12 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param value
      */
     @Input()
-    set fusePerfectScrollbarOptions(value)
-    {
+    set fusePerfectScrollbarOptions(value) {
         // Merge the options
         this._options = _.merge({}, this._options, value);
     }
 
-    get fusePerfectScrollbarOptions(): any
-    {
+    get fusePerfectScrollbarOptions(): any {
         // Return the options
         return this._options;
     }
@@ -78,19 +81,16 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      *
      * @param {boolean | ""} value
      */
-    @Input('fusePerfectScrollbar')
-    set enabled(value: boolean | '')
-    {
+    @Input("fusePerfectScrollbar")
+    set enabled(value: boolean | "") {
         // If nothing is provided with the directive (empty string),
         // we will take that as a true
-        if ( value === '' )
-        {
+        if (value === "") {
             value = true;
         }
 
         // Return, if both values are the same
-        if ( this.enabled === value )
-        {
+        if (this.enabled === value) {
             return;
         }
 
@@ -98,20 +98,16 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
         this._enabled = value;
 
         // If enabled...
-        if ( this.enabled )
-        {
+        if (this.enabled) {
             // Init the directive
             this._init();
-        }
-        else
-        {
+        } else {
             // Otherwise destroy it
             this._destroy();
         }
     }
 
-    get enabled(): boolean | ''
-    {
+    get enabled(): boolean | "" {
         // Return the enabled status
         return this._enabled;
     }
@@ -123,20 +119,16 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
     /**
      * After view init
      */
-    ngAfterViewInit(): void
-    {
+    ngAfterViewInit(): void {
         // Check if scrollbars enabled or not from the main config
         this._fuseConfigService.config
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(
-                (settings) => {
-                    this.enabled = settings.customScrollbars;
-                }
-            );
+            .subscribe(settings => {
+                this.enabled = settings.customScrollbars;
+            });
 
         // Scroll to the top on every route change
-        if ( this.fusePerfectScrollbarOptions.updateOnRouteChange )
-        {
+        if (this.fusePerfectScrollbarOptions.updateOnRouteChange) {
             this._router.events
                 .pipe(
                     takeUntil(this._unsubscribeAll),
@@ -154,8 +146,7 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         this._destroy();
 
         // Unsubscribe from all subscriptions
@@ -172,23 +163,19 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      *
      * @private
      */
-    _init(): void
-    {
+    _init(): void {
         // Return, if already initialized
-        if ( this.isInitialized )
-        {
+        if (this.isInitialized) {
             return;
         }
 
         // Check if is mobile
-        if ( this._platform.ANDROID || this._platform.IOS )
-        {
+        if (this._platform.ANDROID || this._platform.IOS) {
             this.isMobile = true;
         }
 
         // Return if it's mobile
-        if ( this.isMobile )
-        {
+        if (this.isMobile) {
             // Return...
             return;
         }
@@ -204,13 +191,14 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
         // Unbind 'keydown' events of PerfectScrollbar since it causes an extremely
         // high CPU usage on Angular Material inputs.
         // Loop through all the event elements of this PerfectScrollbar instance
-        this.ps.event.eventElements.forEach((eventElement) => {
-
+        this.ps.event.eventElements.forEach(eventElement => {
             // If we hit to the element with a 'keydown' event...
-            if ( typeof eventElement.handlers['keydown'] !== 'undefined' )
-            {
+            if (typeof eventElement.handlers["keydown"] !== "undefined") {
                 // Unbind it
-                eventElement.element.removeEventListener('keydown', eventElement.handlers['keydown'][0]);
+                eventElement.element.removeEventListener(
+                    "keydown",
+                    eventElement.handlers["keydown"][0]
+                );
             }
         });
     }
@@ -220,10 +208,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      *
      * @private
      */
-    _destroy(): void
-    {
-        if ( !this.isInitialized || !this.ps )
-        {
+    _destroy(): void {
+        if (!this.isInitialized || !this.ps) {
             return;
         }
 
@@ -240,9 +226,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      *
      * @private
      */
-    @HostListener('window:resize')
-    _updateOnResize(): void
-    {
+    @HostListener("window:resize")
+    _updateOnResize(): void {
         this._debouncedUpdate();
     }
 
@@ -255,11 +240,9 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      *
      * @param {Event} event
      */
-    @HostListener('document:click', ['$event'])
-    documentClick(event: Event): void
-    {
-        if ( !this.isInitialized || !this.ps )
-        {
+    @HostListener("document:click", ["$event"])
+    documentClick(event: Event): void {
+        if (!this.isInitialized || !this.ps) {
             return;
         }
 
@@ -273,10 +256,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
     /**
      * Update the scrollbar
      */
-    update(): void
-    {
-        if ( !this.isInitialized )
-        {
+    update(): void {
+        if (!this.isInitialized) {
             return;
         }
 
@@ -287,8 +268,7 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
     /**
      * Destroy the scrollbar
      */
-    destroy(): void
-    {
+    destroy(): void {
         this.ngOnDestroy();
     }
 
@@ -298,9 +278,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} x
      * @param {number} speed
      */
-    scrollToX(x: number, speed?: number): void
-    {
-        this.animateScrolling('scrollLeft', x, speed);
+    scrollToX(x: number, speed?: number): void {
+        this.animateScrolling("scrollLeft", x, speed);
     }
 
     /**
@@ -309,9 +288,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} y
      * @param {number} speed
      */
-    scrollToY(y: number, speed?: number): void
-    {
-        this.animateScrolling('scrollTop', y, speed);
+    scrollToY(y: number, speed?: number): void {
+        this.animateScrolling("scrollTop", y, speed);
     }
 
     /**
@@ -320,9 +298,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} offset
      * @param {number} speed
      */
-    scrollToTop(offset?: number, speed?: number): void
-    {
-        this.animateScrolling('scrollTop', (offset || 0), speed);
+    scrollToTop(offset?: number, speed?: number): void {
+        this.animateScrolling("scrollTop", offset || 0, speed);
     }
 
     /**
@@ -331,9 +308,8 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} offset
      * @param {number} speed
      */
-    scrollToLeft(offset?: number, speed?: number): void
-    {
-        this.animateScrolling('scrollLeft', (offset || 0), speed);
+    scrollToLeft(offset?: number, speed?: number): void {
+        this.animateScrolling("scrollLeft", offset || 0, speed);
     }
 
     /**
@@ -342,11 +318,10 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} offset
      * @param {number} speed
      */
-    scrollToRight(offset?: number, speed?: number): void
-    {
+    scrollToRight(offset?: number, speed?: number): void {
         const width = this.elementRef.nativeElement.scrollWidth;
 
-        this.animateScrolling('scrollLeft', width - (offset || 0), speed);
+        this.animateScrolling("scrollLeft", width - (offset || 0), speed);
     }
 
     /**
@@ -355,11 +330,10 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} offset
      * @param {number} speed
      */
-    scrollToBottom(offset?: number, speed?: number): void
-    {
+    scrollToBottom(offset?: number, speed?: number): void {
         const height = this.elementRef.nativeElement.scrollHeight;
 
-        this.animateScrolling('scrollTop', height - (offset || 0), speed);
+        this.animateScrolling("scrollTop", height - (offset || 0), speed);
     }
 
     /**
@@ -369,18 +343,14 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
      * @param {number} value
      * @param {number} speed
      */
-    animateScrolling(target: string, value: number, speed?: number): void
-    {
-        if ( !speed )
-        {
+    animateScrolling(target: string, value: number, speed?: number): void {
+        if (!speed) {
             this.elementRef.nativeElement[target] = value;
 
             // PS has weird event sending order, this is a workaround for that
             this.update();
             this.update();
-        }
-        else if ( value !== this.elementRef.nativeElement[target] )
-        {
+        } else if (value !== this.elementRef.nativeElement[target]) {
             let newValue = 0;
             let scrollCount = 0;
 
@@ -389,26 +359,27 @@ export class FusePerfectScrollbarDirective implements AfterViewInit, OnDestroy
 
             const cosParameter = (oldValue - value) / 2;
 
-            const step = (newTimestamp) => {
-                scrollCount += Math.PI / (speed / (newTimestamp - oldTimestamp));
+            const step = newTimestamp => {
+                scrollCount +=
+                    Math.PI / (speed / (newTimestamp - oldTimestamp));
 
-                newValue = Math.round(value + cosParameter + cosParameter * Math.cos(scrollCount));
+                newValue = Math.round(
+                    value + cosParameter + cosParameter * Math.cos(scrollCount)
+                );
 
                 // Only continue animation if scroll position has not changed
-                if ( this.elementRef.nativeElement[target] === oldValue )
-                {
-                    if ( scrollCount >= Math.PI )
-                    {
+                if (this.elementRef.nativeElement[target] === oldValue) {
+                    if (scrollCount >= Math.PI) {
                         this.elementRef.nativeElement[target] = value;
 
                         // PS has weird event sending order, this is a workaround for that
                         this.update();
 
                         this.update();
-                    }
-                    else
-                    {
-                        this.elementRef.nativeElement[target] = oldValue = newValue;
+                    } else {
+                        this.elementRef.nativeElement[
+                            target
+                        ] = oldValue = newValue;
 
                         oldTimestamp = newTimestamp;
 

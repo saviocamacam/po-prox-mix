@@ -15,6 +15,16 @@ const appRoutes: Routes = [
         path: "entering",
         loadChildren:
             "./main/entering/entering-routing.module#EnteringRoutingModule"
+    },
+    {
+        path: "transport",
+        loadChildren:
+            "./main/transport/transport-routing.module#TransportRoutingModule"
+    },
+    {
+        path: "designation",
+        loadChildren:
+            "./main/designation/designation-routing.module#DesignationRoutingModule"
     }
 ];
 
